@@ -2,6 +2,8 @@ name: Build Images
 #
 
 on:
+  repository_dispatch:
+    types: ["armbian"]
   push:
   schedule:
     - cron: "30 3 * * *"
