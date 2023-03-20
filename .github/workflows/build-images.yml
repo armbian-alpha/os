@@ -30,7 +30,7 @@ jobs:
   # In case we have a currently active build, cancel it
   Prepare:
     name: "Generate version"
-    if: ${{ github.repository_owner == 'Armbian' }}
+    if: ${{ github.repository_owner == 'armbian-alpha' }}
     runs-on: ubuntu-latest
     outputs:
       version: ${{steps.releases.outputs.version}}
@@ -74,7 +74,7 @@ jobs:
   generaterelease:
 
     needs: [ Prepare ]
-    if: ${{ github.repository_owner == 'Armbian' }}
+    if: ${{ github.repository_owner == 'armbian-alpha' }}
     runs-on: ubuntu-latest
     name: "Generate ${{ inputs.release }} release"
     outputs:
@@ -97,7 +97,7 @@ jobs:
           fetch-depth: 1
 
       - uses: ncipollo/release-action@v1
-        if: ${{ github.repository_owner == 'Armbian' && github.event.inputs.release != 'stable' }}
+        if: ${{ github.repository_owner == 'armbian-alpha' && github.event.inputs.release != 'stable' }}
         with:
           artifacts: "LICENSE"
           tag: "${{ needs.Prepare.outputs.version }}"
@@ -110,8 +110,8 @@ jobs:
   Legacy_cli:
 
     needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
+    if: ${{ success() && github.repository_owner == 'armbian-alpha' }}    
+    uses: armbian/os/.github/workflows/include.yml@main
 
     with:
 
@@ -120,195 +120,6 @@ jobs:
       release: "${{ github.event.inputs.release || 'nightly' }}"
       board: '${{ github.event.inputs.board }}'
       variant: 'cli'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Legacy_desktop:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'legacy'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'desktop'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Legacy_minimal:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'legacy'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'minimal'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Current_cli:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'current'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'cli'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Current_desktop:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'current'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'desktop'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Current_minimal:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'current'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'minimal'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Edge_cli:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'edge'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'cli'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Edge_desktop:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'edge'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'desktop'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Edge_minimal:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'edge'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'minimal'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Midstream:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'Armbian' }}
-    uses: ./.github/workflows/include.yml
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'midstream'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: ''
       version: "${{ needs.generaterelease.outputs.version }}"
 
     secrets:
