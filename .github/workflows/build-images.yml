@@ -3,7 +3,7 @@ name: Build Images
 
 on:
   repository_dispatch:
-    types: ["armbian"]
+    types: ["Dispatched jobs"]
   push:
   schedule:
     - cron: "30 3 * * *"
