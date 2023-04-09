@@ -1,6 +1,5 @@
 name: Build Images
 #
-
 on:
   repository_dispatch:
     types: ["Dispatched jobs"]
@@ -55,75 +54,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           days_old: 10
 
-      - name: "Get latest release version"
-        id: releases
-        run: |
-
-          get_latest_release() {
-            curl --silent "https://api.github.com/repos/$1/releases/latest" |
-            grep '"tag_name":' |
-            sed -E 's/.*"([^"]+)".*/\1/'
-          }
-
-          VER=$(echo $(get_latest_release "armbian/os") | rev | cut -d'.' -f 1 | rev | sed 's/^0*//')
-          PREFIX=$(echo $(curl https://raw.githubusercontent.com/armbian/build/main/VERSION | sed "s/-trunk.*//"))
-          RELE=$(printf "%04d\n" $((VER+1)))
-          echo "version=${PREFIX}.${RELE}" >> $GITHUB_OUTPUT
-          [[ -n "${{ inputs.version }}" ]] && echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT || true
-
-  generaterelease:
-
-    needs: [ Prepare ]
-    if: ${{ github.repository_owner == 'armbian-alpha' }}
-    runs-on: ubuntu-latest
-    name: "Generate ${{ inputs.release }} release"
-    outputs:
-      version: ${{steps.releases.outputs.version}}
-    steps:
-
-      - name: "Get latest release version"
-        id: releases
-        run: |
-
-          echo "version=${{ needs.Prepare.outputs.version }}" >> $GITHUB_OUTPUT
-
-      - run: |
-          echo "Release: ${{ github.event.inputs.release }}"
-          echo "Board: ${{ github.event.inputs.board }}"
-          echo "Version: ${{ needs.Prepare.outputs.version }}"
-
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-
-      - uses: ncipollo/release-action@v1
-        if: ${{ github.repository_owner == 'armbian-alpha' && github.event.inputs.release != 'stable' }}
-        with:
-          artifacts: "LICENSE"
-          tag: "${{ needs.Prepare.outputs.version }}"
-          name: "Armbian ${{ needs.Prepare.outputs.version }}"
-          bodyFile: ".github/Releases.md"
-          allowUpdates: true
-          removeArtifacts: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  Legacy_cli:
-
-    needs: generaterelease
-    if: ${{ success() && github.repository_owner == 'armbian-alpha' }}    
-    uses: armbian/os/.github/workflows/include.yml@main
-
-    with:
-
-      config: "${{ github.event.inputs.config || 'default.conf' }}"
-      branch: 'legacy'
-      release: "${{ github.event.inputs.release || 'nightly' }}"
-      board: '${{ github.event.inputs.board }}'
-      variant: 'cli'
-      version: "${{ needs.generaterelease.outputs.version }}"
-
-    secrets:
-      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
-      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
-      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
-      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
