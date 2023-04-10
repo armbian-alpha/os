@@ -61,12 +61,14 @@ jobs:
     outputs:
       version: ${{steps.releases.outputs.version}}
     steps:
-      - id: node_release
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          owner: armbian
-          repo: os
-          excludes: draft
+
+      - name: Get latest release of NodeJS
+        uses: rez0n/actions-github-release@main
+        id: node_release
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: "armbian/os"
+          type: "prerelease"
 
       - name: "Show"
         run: echo ${{ steps.node_release.outputs.release }}
@@ -75,7 +77,7 @@ jobs:
         id: releases
         run: |
 
-          echo "${{ steps.changelog.outputs.tag }}" > tag
+          echo "${{ steps.node_release.outputs.tag }}" > tag
           echo "version=${{ steps.node_release.outputs.release }}" >> $GITHUB_OUTPUT
 
       - name: 'Upload Artifact'
