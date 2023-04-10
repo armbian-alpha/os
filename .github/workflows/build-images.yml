@@ -160,6 +160,7 @@ jobs:
         omitBody: true
         omitName: true
         allowUpdates: true
+        prerelease: false
         makeLatest: true
         token: ${{ secrets.GITHUB_TOKEN }}
 
