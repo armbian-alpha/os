@@ -113,6 +113,7 @@ jobs:
       part: 1
       of: 6
       version: "${{ needs.Version.outputs.version }}"
+      parallel: 20
 
     secrets:
       ACCESS_TOKEN:  ${{ secrets.GITHUB_TOKEN }} # ${{ secrets.ACCESS_TOKEN }}
