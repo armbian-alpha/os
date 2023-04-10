@@ -65,7 +65,7 @@ jobs:
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: "armbian/os"
-          type: "latest"
+          type: "prerelease"
 
       - name: "Show"
         run: echo ${{ steps.node_release.outputs.release }}
