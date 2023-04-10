@@ -61,13 +61,12 @@ jobs:
     outputs:
       version: ${{steps.releases.outputs.version}}
     steps:
-      - name: Get latest release of NodeJS
-        uses: rez0n/actions-github-release@main
-        id: node_release
-        env:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: "armbian/os"
-          type: "prerelease"
+      - id: node_release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: armbian
+          repo: os
+          excludes: draft
 
       - name: "Show"
         run: echo ${{ steps.node_release.outputs.release }}
