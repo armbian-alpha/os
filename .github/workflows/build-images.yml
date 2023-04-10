@@ -26,9 +26,8 @@ on:
 
 jobs:
 
-  # In case we have a currently active build, cancel it
   Prepare:
-    name: "Generate version"
+    name: "Prepare"
     if: ${{ github.repository_owner == 'armbian-alpha' }}
     runs-on: ubuntu-latest
     outputs:
@@ -54,3 +53,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           days_old: 10
 
+  Version:
+    name: "Generate version"
+    if: ${{ github.repository_owner == 'armbian-alpha' }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: keydb
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: armbian
+          repo: os
+          excludes: prerelease, draft
+      - name: "Show"
+        run: echo ${{ steps.keydb.outputs.release }}
