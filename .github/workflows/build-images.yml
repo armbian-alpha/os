@@ -55,6 +55,7 @@ jobs:
 
   Version:
     name: "Generate version"
+    needs: Prepare
     if: ${{ github.repository_owner == 'armbian-alpha' }}
     runs-on: ubuntu-latest
     steps:
@@ -63,6 +64,6 @@ jobs:
         with:
           owner: armbian
           repo: os
-          excludes: prerelease, draft
+
       - name: "Show"
         run: echo ${{ steps.keydb.outputs.release }}
