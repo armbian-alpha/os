@@ -154,7 +154,7 @@ jobs:
         days_old: 14
 
     - uses: ncipollo/release-action@v1
-      if: ${{ github.repository_owner == 'Armbian' && github.event.inputs.version == '' }}
+      if: ${{ github.repository_owner == 'armbian-alpha' && github.event.inputs.version == '' }}
       with:
         tag: ${{ env.TAG }}
         omitBody: true
