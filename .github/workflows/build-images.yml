@@ -71,12 +71,23 @@ jobs:
 
       - name: "Show"
         run: echo ${{ steps.node_release.outputs.release }}
-        
+
       - name: "Store version"
         id: releases
         run: |
 
           echo "version=${{ steps.node_release.outputs.release }}" >> $GITHUB_OUTPUT
+          
+      - uses: ncipollo/release-action@v1
+        if: ${{ steps.node_release.outputs.release != '' }}
+        with:
+          tag: ${{ steps.node_release.outputs.release }}
+          name: "${{ steps.node_release.outputs.release }}"
+          omitBody: "true"
+          prerelease: "true"
+          allowUpdates: true
+          removeArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
         
   Cluster_1:
 
