@@ -69,3 +69,26 @@ jobs:
 
       - name: "Show"
         run: echo ${{ steps.node_release.outputs.release }}
+        
+  Cluster_1:
+
+    needs: Version
+    name: "Cluster 1/6"
+    if: ${{ success() && github.repository_owner == 'armbian-alpha' }}
+    uses: armbian/scripts/.github/workflows/build-images.yml@main
+
+    with:
+
+      config: "${{ github.event.inputs.config || 'default.conf' }}"
+      release: "${{ github.event.inputs.release || 'nightly' }}"
+      board: '${{ github.event.inputs.board }}'
+      part: 1
+      of: 6
+      version: "${{ steps.node_release.outputs.release }}"
+
+    secrets:
+      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
+      KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
+      GPG_KEY1: ${{ secrets.GPG_KEY1 }}
+      GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
