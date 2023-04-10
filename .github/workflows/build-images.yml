@@ -105,7 +105,7 @@ jobs:
       version: "${{ needs.Version.outputs.version }}"
 
     secrets:
-      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      ACCESS_TOKEN:  ${{ secrets.GITHUB_TOKEN }} # ${{ secrets.ACCESS_TOKEN }}
       SSH_KEY_TORRENTS: ${{ secrets.KEY_TORRENTS }}
       KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
       GPG_KEY1: ${{ secrets.GPG_KEY1 }}
