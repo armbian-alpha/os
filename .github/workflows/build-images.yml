@@ -75,8 +75,16 @@ jobs:
         id: releases
         run: |
 
+          echo "${{ steps.changelog.outputs.tag }}" > tag
           echo "version=${{ steps.node_release.outputs.release }}" >> $GITHUB_OUTPUT
-          
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets-for-download
+          path: tag
+          retention-days: 5
+
       - uses: ncipollo/release-action@v1
         if: ${{ steps.node_release.outputs.release != '' }}
         with:
@@ -110,3 +118,49 @@ jobs:
       KNOWN_HOSTS_UPLOAD: ${{ secrets.KNOWN_HOSTS_UPLOAD }}
       GPG_KEY1: ${{ secrets.GPG_KEY1 }}
       GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
+
+
+  Closing:
+
+    name: "Closing"
+    needs: [Cluster_1]
+    runs-on: ubuntu-latest
+    steps:
+   
+    - name: Download a single artifact
+      uses: actions/download-artifact@v3
+      with:
+         name: assets-for-download
+         path: tag
+
+    - name: "Get tag"
+      run: echo "TAG=$(cat tag/tag)" >> $GITHUB_ENV
+      shell: bash
+
+    - name: "Keep only 3 releases"
+      uses: Vucko130/delete-older-releases@v0.2.2
+      with:
+        keep_latest: 3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+    - name: "Purge action workflow logs"
+      uses: igorjs/gh-actions-clean-workflow@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        days_old: 14
+
+    - uses: ncipollo/release-action@v1
+      if: ${{ github.repository_owner == 'Armbian' && github.event.inputs.version == '' }}
+      with:
+        tag: ${{ env.TAG }}
+        omitBody: true
+        omitName: true
+        allowUpdates: true
+        makeLatest: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: geekyeggo/delete-artifact@v2
+      with:
+         name: assets-for-download
+
