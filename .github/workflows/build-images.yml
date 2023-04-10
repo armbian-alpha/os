@@ -77,7 +77,7 @@ jobs:
         id: releases
         run: |
 
-          echo "${{ steps.node_release.outputs.tag }}" > tag
+          echo "${{ steps.node_release.outputs.release }}" > tag
           echo "version=${{ steps.node_release.outputs.release }}" >> $GITHUB_OUTPUT
 
       - name: 'Upload Artifact'
