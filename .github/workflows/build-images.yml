@@ -58,6 +58,8 @@ jobs:
     needs: Prepare
     if: ${{ github.repository_owner == 'armbian-alpha' }}
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{steps.releases.outputs.version}}
     steps:
       - name: Get latest release of NodeJS
         uses: rez0n/actions-github-release@main
@@ -69,6 +71,12 @@ jobs:
 
       - name: "Show"
         run: echo ${{ steps.node_release.outputs.release }}
+        
+      - name: "Store version"
+        id: releases
+        run: |
+
+          echo "version=${{ steps.node_release.outputs.release }}" >> $GITHUB_OUTPUT
         
   Cluster_1:
 
@@ -84,7 +92,7 @@ jobs:
       board: '${{ github.event.inputs.board }}'
       part: 1
       of: 6
-      version: "${{ steps.node_release.outputs.release }}"
+      version: "${{ needs.Version.outputs.version }}"
 
     secrets:
       ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
