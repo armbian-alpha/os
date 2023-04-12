@@ -11,7 +11,7 @@ jobs:
 
   Prepare:
     name: "Prepare"
-    if: ${{ github.repository_owner == 'armbian-alpha' }}
+    if: ${{ github.repository_owner == 'armbian-alpha' && github.event.client_payload.release == 'nightly' }}
     runs-on: ubuntu-latest
     steps:
 
@@ -59,7 +59,7 @@ jobs:
 
   Closing:
 
-    name: "Closing"
+    name: "Closing"    
     if: always()
     needs: [Build]
     runs-on: ubuntu-latest
@@ -79,7 +79,7 @@ jobs:
         days_old: 14
 
     - uses: ncipollo/release-action@v1
-      if: ${{ github.repository_owner == 'armbian-alpha' }}
+      if: ${{ github.repository_owner == 'armbian-alpha' && github.event.client_payload.release == 'nightly' }}
       with:
         tag: "${{ github.event.client_payload.version }}"
         omitBody: true
