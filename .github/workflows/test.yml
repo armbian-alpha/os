@@ -46,6 +46,7 @@ jobs:
   Build:
 
     name: "Cluster 1/5"
+    needs: Prepare
     if: ${{ github.repository_owner == 'armbian-alpha' }}
     uses: armbian/scripts/.github/workflows/build-images.yml@main
     with:
