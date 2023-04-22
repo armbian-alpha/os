@@ -57,7 +57,7 @@ jobs:
       parallel: 20
       part: 1
       of: 50
-      version: "${{ needs.generaterelease.outputs.version }}"
+      version: "${{ needs.Prepare.outputs.version }}"
       deploy: true
     secrets:
       ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
