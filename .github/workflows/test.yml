@@ -8,13 +8,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-     
+
+  Prepare:
+    name: "Prepare"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{steps.releases.outputs.version}}
+    timeout-minutes: 5
+    steps:
+
+      - name: "Keep only 2 ${{ github.event.client_payload.release }} releases"
+        uses: Vucko130/delete-older-releases@v0.2.2
+        with:
+          keep_latest: 2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout
+        uses: actions/checkout@v3.4.0
+        with:
+          repository: armbian/os
+          fetch-depth: '1'
+          clean: false
+
+      - name: Save
+        id: releases
+        run: |
+        
+          echo "${{ github.event.client_payload.version }}" > tag
+          echo "version=${{ github.event.client_payload.version }}" >> $GITHUB_OUTPUT
+
+          if [[ "${{ github.event.client_payload.version }}" == null ]]; then
+            echo "$(cat nightly.json | jq -r '.version')" > tag
+            echo "version=$(cat nightly.json | jq -r '.version')" >> $GITHUB_OUTPUT
+          fi
+
   Build:
 
     name: "Cluster 1/5"
     if: ${{ github.repository_owner == 'armbian-alpha' }}
     uses: armbian/scripts/.github/workflows/build-images.yml@main
-
     with:
 
       config: "${{ github.event.client_payload.config || 'all.conf' }}"
@@ -23,7 +56,7 @@ jobs:
       parallel: 20
       part: 1
       of: 50
-      version: "1.0"
+      version: "${{ needs.generaterelease.outputs.version }}"
       deploy: true
     secrets:
       ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
@@ -32,35 +65,3 @@ jobs:
       ARMBIAN_HOST_UPLOAD: ${{ secrets.ARMBIAN_HOST_UPLOAD }}
       GPG_KEY1: ${{ secrets.GPG_KEY1 }}
       GPG_PASSPHRASE1: ${{ secrets.GPG_PASSPHRASE1 }}
-
-  Closing:
-
-    name: "Closing"    
-    if: always()
-    needs: [Build]
-    runs-on: ubuntu-latest
-    steps:
-    
-    - name: "Keep only 4 ${{ github.event.client_payload.release }} releases"
-      uses: Vucko130/delete-older-releases@v0.2.2
-      with:
-        keep_latest: 4
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-    - name: "Purge action workflow logs"
-      uses: igorjs/gh-actions-clean-workflow@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        days_old: 1
-
-    - uses: ncipollo/release-action@v1
-      if: ${{ github.repository_owner == 'armbian-alpha' && github.event.client_payload.release == 'nightly' }}
-      with:
-        tag: "1.0"
-        omitBody: true
-        omitName: true
-        allowUpdates: true
-        prerelease: false
-        makeLatest: true
-        token: ${{ secrets.GITHUB_TOKEN }}
