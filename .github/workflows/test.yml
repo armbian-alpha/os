@@ -2,7 +2,7 @@ name: Build Images
 on:
   workflow_dispatch:
   repository_dispatch:
-    types: [Build]
+    types: [Buildxxx]
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
