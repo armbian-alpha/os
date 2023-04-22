@@ -8,34 +8,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  Prepare:
-    name: "Prepare"
-    if: ${{ github.repository_owner == 'armbian-alpha' }}
-    runs-on: ubuntu-latest
-    steps:
-
-      - uses: dev-drprasad/delete-tag-and-release@v0.2.1
-        with:
-          tag_name: ${{ github.event.client_payload.version }}
-          delete_release: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: ncipollo/release-action@v1
-        if: ${{ github.event.client_payload.release == 'nightly' }}
-        with:
-          tag: "${{ github.event.client_payload.version }}"
-          name: "${{ github.event.client_payload.version }}"
-          omitBody: true
-          prerelease: true
-          allowUpdates: true
-          removeArtifacts: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-        
+     
   Build:
 
-    needs: Prepare
     name: "Cluster 1/5"
     if: ${{ github.repository_owner == 'armbian-alpha' }}
     uses: armbian/scripts/.github/workflows/build-images.yml@main
