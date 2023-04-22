@@ -41,14 +41,14 @@ jobs:
     uses: armbian/scripts/.github/workflows/build-images.yml@main
 
     with:
-
       config: "${{ github.event.client_payload.config || 'all.conf' }}"
       release: "${{ github.event.client_payload.release || 'nightly' }}"
-      board: '${{ github.event.client_payload.board }}'
+      board: "${{ github.event.client_payload.board }}"
       parallel: 20
       part: 1
       of: 5
-      version: "${{ github.event.client_payload.version }}"
+      version: "${{ needs.Prepare.outputs.version }}"
+      deploy: false
     secrets:
       ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       KEY_ARMBIAN_UPLOAD: ${{ secrets.KEY_ARMBIAN_UPLOAD }}
