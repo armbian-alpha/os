@@ -36,7 +36,7 @@ jobs:
   Build:
 
     needs: Prepare
-    name: "Cluster 1/5"
+    name: "Cluster 1/6"
     if: ${{ github.repository_owner == 'armbian-alpha' }}
     uses: armbian/scripts/.github/workflows/build-images.yml@main
 
@@ -46,7 +46,7 @@ jobs:
       board: "${{ github.event.client_payload.board }}"
       parallel: 20
       part: 1
-      of: 5
+      of: 6
       version: "${{ needs.Prepare.outputs.version }}"
       deploy: false
     secrets:
