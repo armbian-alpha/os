@@ -38,10 +38,10 @@ jobs:
           echo "${{ github.event.client_payload.version }}" > tag
           echo "version=${{ github.event.client_payload.version }}" >> $GITHUB_OUTPUT
 
-          if [[ "${{ github.event.client_payload.version }}" == null ]]; then
+          #if [[ "${{ github.event.client_payload.version }}" == null ]]; then
             echo "$(cat nightly.json | jq -r '.version')" > tag
             echo "version=$(cat nightly.json | jq -r '.version')" >> $GITHUB_OUTPUT
-          fi
+          #fi
 
   Build:
 
