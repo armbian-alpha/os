@@ -56,7 +56,7 @@ jobs:
       board: "${{ github.event.client_payload.board }}"
       parallel: 20
       part: 1
-      of: 100
+      of: 5
       version: "${{ needs.Prepare.outputs.version }}"
       deploy: true
     secrets:
